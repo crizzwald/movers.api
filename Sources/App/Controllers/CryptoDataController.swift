@@ -43,6 +43,7 @@ public class CryptoDataController: CryptoDataControllerProtocol {
     
     // MARK: Parser
     private func parseRawGainersLosers(_ raw: String) -> Cryptos? {
-        return nil
+        let crypto = Crypto(name: "Bitcoin", symbol: "BTC", volume: 7216450000, price: 10366.70, percent: -8.70)
+        return [crypto]
     }
 }

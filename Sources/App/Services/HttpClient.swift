@@ -120,33 +120,25 @@ public class HttpClient<SessionType: SessionProtocol, RequestType: RequestProtoc
         let task = session.task(with: request) { (data, response, error) in
             // Make sure we don't have a connectivity error
             if let error = error {
-                DispatchQueue.main.async {
-                    completion(.error(nil, error))
-                }
+                completion(.error(nil, error))
                 return
             }
             
             // Make sure we have a 200 status code
             if let statusCode = (response as? HTTPURLResponse)?.statusCode {
                 if statusCode != Constants.StatusCodes.success {
-                    DispatchQueue.main.async {
-                        completion(.error(nil, HTTPError.statusCode(statusCode, message: "dataTaskWithRequest HTTP status code \(statusCode)")))
-                    }
+                    completion(.error(nil, HTTPError.statusCode(statusCode, message: "dataTaskWithRequest HTTP status code \(statusCode)")))
                     return
                 }
             }
             
             // Do something with data
             guard let data = data else {
-                DispatchQueue.main.async {
-                    completion(.error(nil, HTTPError.cannotParseResponse))
-                }
+                completion(.error(nil, HTTPError.cannotParseResponse))
                 return
             }
             
-            DispatchQueue.main.async {
-                completion(.success(data))
-            }
+            completion(.success(data))
         }
         
         task?.resume()

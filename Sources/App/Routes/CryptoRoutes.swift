@@ -6,13 +6,30 @@
 //
 
 import Vapor
+import Foundation
 
 extension Droplet {
     func setupRoutes(cryptoDataController: CryptoDataControllerProtocol) throws {
-        get("hello") { req in
-            var json = JSON()
-            try json.set("hello", "world")
-            return json
+        let baseResource = "crypto"
+        
+        get("\(baseResource)/all") { req in
+            let semaphore = DispatchSemaphore(value: 0)
+            
+            var modelResponse: Response?
+            cryptoDataController.getDataGainersLosers(completion: { (response) in
+                switch response {
+                case .error:
+                    modelResponse = try? ErrorResponse(errorCode: 1, errorMessage: "Something went wrong when trying to get crypto").makeResponse(using: JSONEncoder(), status: .internalServerError, headers: [:])
+                case .success(let cryptos):
+                    modelResponse = try? cryptos.makeResponse()
+                }
+                semaphore.signal()
+            })
+            
+             _ = semaphore.wait(timeout: DispatchTime.distantFuture)
+            
+            guard let cryptoResponse = modelResponse else { throw Abort.badRequest }
+            return cryptoResponse
         }
     }
 }

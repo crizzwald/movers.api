@@ -103,9 +103,7 @@ public class HttpClient<SessionType: SessionProtocol, RequestType: RequestProtoc
         urlComponents.queryItems = queryItems
         
         guard let requestUrl = urlComponents.url else {
-            DispatchQueue.main.async {
-                completion(.error(nil, nil))
-            }
+            completion(.error(nil, nil))
             return
         }
         

@@ -7,6 +7,7 @@
 
 import Vapor
 import Foundation
+import Dispatch
 
 extension Droplet {
     func setupRoutes(cryptoDataController: CryptoDataControllerProtocol) throws {

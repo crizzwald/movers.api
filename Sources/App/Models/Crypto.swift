@@ -9,10 +9,12 @@ import Foundation
 
 public typealias Cryptos = [Crypto]
 public struct Crypto: Codable {
+    public let number: Int
     public let name: String
-    public let symbol: String
-    public let volume: Int
+    public let marketcap: Float
     public let price: Float
+    public let volume: Int
+    public let supply: Float
     public let percent: Float
 }
 

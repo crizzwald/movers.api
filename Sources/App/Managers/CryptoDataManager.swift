@@ -22,7 +22,7 @@ public typealias CryptoDataManagerCompletion = (_ response: CryptoDataManagerRes
 public class CryptoDataManager: CryptoDataManagerProtocol {
     enum Constants {
         enum Endpoints {
-            static let all = "/all/views/all"
+            static let all = "/"
         }
     }
     

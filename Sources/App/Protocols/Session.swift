@@ -7,8 +7,8 @@
 
 import Foundation
 
-public protocol SessionProtocol {
-    init(configuration: URLSessionConfiguration)
+public protocol SessionProtocol: class {
+    required init(configuration: URLSessionConfiguration)
     func task(with request: RequestProtocol, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) -> SessionDataTaskProtocol?
 }
 

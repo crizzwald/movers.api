@@ -19,7 +19,7 @@ extension Droplet {
             cryptoDataController.getDataGainersLosers(completion: { (response) in
                 switch response {
                 case .error:
-                    modelResponse = try? ErrorResponse(errorCode: 1, errorMessage: "Something went wrong when trying to get crypto").makeResponse(status: .internalServerError)
+                    modelResponse = try? ErrorResponse(errorCode: 1, errorMessage: "Unable to parse html").makeResponse(status: .internalServerError)
                 case .success(let cryptos):
                     modelResponse = try? cryptos.makeResponse()
                 }

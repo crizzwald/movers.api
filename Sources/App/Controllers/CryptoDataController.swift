@@ -65,7 +65,6 @@ public class CryptoDataController: CryptoDataControllerProtocol {
     
     // MARK: Parser
     private func parseRaw(_ html: String) -> Cryptos? {
-        //table: currencies-all
         do {
             let doc: Document = try SwiftSoup.parse(html)
             guard let table: Element = try doc.select("#\(Constants.Keys.currencies)").first(),
@@ -117,6 +116,7 @@ public class CryptoDataController: CryptoDataControllerProtocol {
                     let rawSupply = supply?.trim().replaceRawCharacters(), let cryptoSupply = Float(rawSupply),
                     let rawPercent = percent?.trim().replaceRawCharacters(), let cryptoPercent = Float(rawPercent)
                     else { break }
+                
                 let crypto = Crypto(number: cryptoNumber, name: cryptoName, marketcap: cryptoMarketcap, price: cryptoPrice, volume: cryptoVolume, supply: cryptoSupply, percent: cryptoPercent)
                 cryptos.append(crypto)
             }

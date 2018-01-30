@@ -68,8 +68,8 @@ fileprivate enum Constants {
     }
 }
 
-public class HttpClient<SessionType: SessionProtocol, RequestType: RequestProtocol>: HttpClientProtocol {
-    let session: SessionType = SessionType(configuration: URLSessionConfiguration.default)
+public class HttpClient: HttpClientProtocol {
+    let session: URLSession = URLSession(configuration: URLSessionConfiguration.default)// SessionType(configuration: URLSessionConfiguration.default)
     let url: URL
     
     /// The access token used to sign requests. If non-nil, it will be included in the request header
@@ -107,7 +107,7 @@ public class HttpClient<SessionType: SessionProtocol, RequestType: RequestProtoc
             return
         }
         
-        var request = RequestType(url: requestUrl)
+        var request = URLRequest(url: requestUrl, cachePolicy: .useProtocolCachePolicy, timeoutInterval: 60.0)
         request.httpMethod = Constants.HttpVerbs.get
         request.addValue(Constants.Headers.applicationJson, forHTTPHeaderField: Constants.Headers.contentType)
         
@@ -115,7 +115,7 @@ public class HttpClient<SessionType: SessionProtocol, RequestType: RequestProtoc
             request.addValue("\(Constants.Headers.bearer) \(accessToken)", forHTTPHeaderField: Constants.Headers.authorization)
         }
         
-        let task = session.task(with: request) { (data, response, error) in
+        let task = session.dataTask(with: request) { (data, response, error) in
             // Make sure we don't have a connectivity error
             if let error = error {
                 completion(.error(nil, error))
@@ -139,6 +139,6 @@ public class HttpClient<SessionType: SessionProtocol, RequestType: RequestProtoc
             completion(.success(data))
         }
         
-        task?.resume()
+        task.resume()
     }
 }

@@ -1,8 +1,13 @@
 @_exported import Vapor
 
+import Foundation
+
 extension Droplet {
     public func setup() throws {
-        try setupRoutes()
-        // Do any additional droplet setup
+        let cryptoHttpClient = HttpClient<URLSession, URLRequest>(url: BaseURLs.coinMarketCap, accessToken: nil)
+        let cryptoDataManager = CryptoDataManager(httpClient: cryptoHttpClient)
+        let cryptoDataController = CryptoDataController(cryptoDataManager: cryptoDataManager)
+        
+        try setupRoutes(cryptoDataController: cryptoDataController)
     }
 }

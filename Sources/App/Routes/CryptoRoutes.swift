@@ -13,9 +13,8 @@ extension Droplet {
     func setupRoutes(cryptoDataController: CryptoDataControllerProtocol) throws {
         let baseResource = "crypto"
         get("hello") { req in
-            var json = JSON()
-            try json.set("hello", "world")
-            return json
+            let apiResponse = try self.client.get("https://coinmarketcap.com")
+            return apiResponse
         }
         
         get("crypto") { req in

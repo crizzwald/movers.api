@@ -19,7 +19,7 @@ extension Droplet {
         }
         
         get("\(baseResource)/all") { req in
-            let semaphore = DispatchSemaphore(value: 0)
+            //let semaphore = DispatchSemaphore(value: 0)
             
             var modelResponse: Response?
             cryptoDataController.getDataGainersLosers(completion: { (response) in
@@ -29,10 +29,10 @@ extension Droplet {
                 case .success(let cryptos):
                     modelResponse = try? cryptos.makeResponse()
                 }
-                semaphore.signal()
+                //semaphore.signal()
             })
             
-             _ = semaphore.wait(timeout: DispatchTime.distantFuture)
+             //_ = semaphore.wait(timeout: DispatchTime.distantFuture)
             
             guard let cryptoResponse = modelResponse else { throw Abort.badRequest }
             return cryptoResponse

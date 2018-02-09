@@ -11,4 +11,8 @@ public struct BaseURLs {
     public static let coinMarketCap: URL = {
         return URL(string: "https://coinmarketcap.com")!
     }()
+    
+    public static let stocksUnderOne: URL = {
+        return URL(string: "http://www.stocksunder1.org/penny-stocks")!
+    }()
 }

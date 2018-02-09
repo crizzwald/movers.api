@@ -48,15 +48,18 @@ public protocol HttpClientProtocol {
     init(url: URL, accessToken: String?)
     
     func get(_ route: String, queryItems: [URLQueryItem]?, completion: @escaping HTTPCompletion)
+    func post(_ route: String, queryItems: [URLQueryItem]?, completion: @escaping HTTPCompletion)
 }
 
 fileprivate enum Constants {
     enum HttpVerbs {
         static let get = "GET"
+        static let post = "POST"
     }
     
     enum Headers {
         static let applicationJson = "text/html; charset=utf-8"
+        static let urlEncoded = "application/x-www-form-urlencoded"
         static let contentType = "Content-Type"
         
         static let authorization = "Authorization"
@@ -69,7 +72,7 @@ fileprivate enum Constants {
 }
 
 public class HttpClient: HttpClientProtocol {
-    let session: URLSession = URLSession(configuration: URLSessionConfiguration.default)// SessionType(configuration: URLSessionConfiguration.default)
+    let session: URLSession = URLSession(configuration: URLSessionConfiguration.default)
     let url: URL
     
     /// The access token used to sign requests. If non-nil, it will be included in the request header
@@ -101,6 +104,7 @@ public class HttpClient: HttpClientProtocol {
         urlComponents.host = url.host
         urlComponents.path = route
         urlComponents.queryItems = queryItems
+
         
         guard let requestUrl = urlComponents.url else {
             completion(.error(nil, nil))
@@ -141,4 +145,89 @@ public class HttpClient: HttpClientProtocol {
         
         task.resume()
     }
+    
+    public func post(_ route: String, queryItems: [URLQueryItem]?, completion: @escaping HTTPCompletion) {
+        var urlComponents = URLComponents()
+        urlComponents.scheme = url.scheme
+        urlComponents.host = url.host
+        urlComponents.path = route
+        
+        guard let requestUrl = urlComponents.url else {
+            completion(.error(nil, nil))
+            return
+        }
+        
+        var request = URLRequest(url: requestUrl, cachePolicy: .useProtocolCachePolicy, timeoutInterval: 60.0)
+        request.httpMethod = Constants.HttpVerbs.post
+        request.addValue(Constants.Headers.urlEncoded, forHTTPHeaderField: Constants.Headers.contentType)
+        
+        if let queryItems = queryItems {
+            var postString = ""
+            queryItems.forEach({ (item) in
+                guard let value = item.value else { return }
+                postString += "\(item.name)=\(value)&"
+            })
+            request.httpBody = postString.data(using: .utf8)
+        }
+        
+        if let accessToken = accessToken {
+            request.addValue("\(Constants.Headers.bearer) \(accessToken)", forHTTPHeaderField: Constants.Headers.authorization)
+        }
+        
+        let task = session.dataTask(with: request) { (data, response, error) in
+            // Make sure we don't have a connectivity error
+            if let error = error {
+                completion(.error(nil, error))
+                return
+            }
+            
+            // Make sure we have a 200 status code
+            if let statusCode = (response as? HTTPURLResponse)?.statusCode {
+                if statusCode != Constants.StatusCodes.success {
+                    completion(.error(nil, HTTPError.statusCode(statusCode, message: "dataTaskWithRequest HTTP status code \(statusCode)")))
+                    return
+                }
+            }
+            
+            // Do something with data
+            guard let data = data else {
+                completion(.error(nil, HTTPError.cannotParseResponse))
+                return
+            }
+            
+            completion(.success(data))
+        }
+        
+        task.resume()
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

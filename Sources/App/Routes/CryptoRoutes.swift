@@ -11,12 +11,6 @@ import Dispatch
 
 extension Droplet {
     func setupRoutes(cryptoDataController: CryptoDataControllerProtocol) throws {
-        let baseResource = "crypto"
-        get("hello") { req in
-            let apiResponse = try self.client.get("https://coinmarketcap.com")
-            return apiResponse
-        }
-        
         get("crypto") { req in
             let semaphore = DispatchSemaphore(value: 0)
             
